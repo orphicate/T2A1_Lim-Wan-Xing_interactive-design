@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <title>Cyberpunk AI Terminal</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        body {
+            background: #2A2356;
+            color: #6EcbF5;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: left;
+            padding: 20px;
+        }
+        .terminal {
+            width: 960px;
+            background: #1A1A2E;
+            padding: 20px;
+            border: 2px solid #586AE2;
+            border-radius: 5px;
+            min-height: 400px;
+            overflow-y: auto;
+        }
+        .input-line {
+            color: #C252E1;
+        }
+        .glitch-text {
+            font-size: 1.2rem;
+            text-shadow: 2px 2px #C252E1, -2px -2px #E0D9F6;
+            animation: glitch 0.5s infinite alternate;
+        }
+        @keyframes glitch {
+            from {
+                text-shadow: 2px 2px #C252E1, -2px -2px #E0D9F6;
+            }
+            to {
+                text-shadow: -2px -2px #C252E1, 2px 2px #E0D9F6;
+            }
+        }
+        .user-input {
+            background: transparent;
+            border: none;
+            color: #6EcbF5;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+            width: 80%;
+        }
+        .click-to-continue {
+            color: #6EcbF5;
+            cursor: pointer;
+        }
+        .highlight {
+            color: #FF66B2; /* Pink for highlight */
+        }
+        .cheeky-message {
+            color: #ef735d; /* Tomato color for cheeky text */
+            font-style: italic;
+        }
+        .dialogue-option {
+            cursor: pointer;
+            color: #FFDD00; 
+            margin-top: 10px;
+        }
+        .dialogue-option:hover {
+            text-decoration: underline;
+        }
+        .yellow-text {
+            color: #FFDD00;
+        }
+        /* Game button styling */
+        .game-popup-button {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            padding: 15px;
+            background: #FF66B2;
+            color: #FFFFFF;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 60%;
+            max-width: 300px;
+            text-transform: uppercase;
+        }
+        .game-popup-button:hover {
+            background: #FFDD00;
+        }
+        .aqua-text {
+            color: aqua;
+        }
+        .yellow-text {
+            color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal" id="terminal">
+        <p class="glitch-text">Welcome to AI-Lab Terminal</p>
+        <div class="input-line">
+            > <input type="text" id="command-input" class="user-input" autofocus>
+        </div>
+        <!-- Game button placed inside the terminal, just below the last line of text -->
+        <div class="game-popup-button" id="game-popup-button">
+            <a href="game.html" id="start-game-link">Start the Game</a>
+        </div>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const input = document.getElementById('command-input');
+        const initialLines = [
+            "Booting up... 🌐 Systems online.",
+            "Scanning user... Oh. Hello! My name is K-8, an AI with superior intellect... if I do say so myself.",
+            "You're here to learn about Generative AI? Don't ask me how I know that. I'm smart, after all.",
+            "Data nodes initialized. Pathways open.",
+            "Probability of your confusion: 87%.",
+            "Let’s fix that.",
+            "Type the command to begin: [learn]. Or just stare at the screen--Me? I have all the time in the world."
+        ];
+
+        let currentLineIndex = 0;
+        let waitingMessageDisplayed = false;
+
+        function appendLine(text, className = '', isClickable = false) {
+            const p = document.createElement('p');
+            p.innerHTML = text; // Use innerHTML to allow HTML (like <span>) in text
+            if (className) p.classList.add(className);
+            if (isClickable) {
+                p.classList.add('click-to-continue');
+                p.addEventListener('click', showNextLine);
+            }
+            terminal.insertBefore(p, input.parentElement);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function highlightSpecificWords(text) {
+            // Define the phrases to highlight
+            const phrasesToHighlight = [
+                "artificial intelligence systems that can generate new content like text, images, or music by learning patterns from existing data",
+                "Virtual assistants, Siri and Alexa",
+                "personalized social media feeds",
+                "email spam filter",
+                "learns patterns from data",
+                "creates new content"
+            ];
+
+            // Loop through each phrase and wrap it with a span for styling
+            phrasesToHighlight.forEach(phrase => {
+                const regex = new RegExp(`(${phrase})`, 'g');
+                text = text.replace(regex, '<span class="yellow-text">$1</span>');
+            });
+
+            return text;
+        }
+
+        function showNextLine() {
+            if (currentLineIndex < initialLines.length) {
+                let line = initialLines[currentLineIndex];
+                
+                // Check if it's the specific line you want to highlight in pink
+                if (line === "Type the command to begin: [learn]. Or just stare at the screen--Me? I have all the time in the world.") {
+                    line = '<span class="highlight">' + line + '</span>'; // Wrap the line with the highlight class
+                } else {
+                    line = highlightSpecificWords(line); // Highlight the specific words in the other lines
+                }
+                
+                appendLine(line, '', true);
+                currentLineIndex++;
+            } else if (!waitingMessageDisplayed) {
+                appendLine("What are you waiting for? Type it already, do you have all day?", 'cheeky-message');
+                waitingMessageDisplayed = true;
+            } else {
+                enableCommandInput();
+            }
+        }
+
+        function enableCommandInput() {
+            input.disabled = false;
+            input.focus();
+        }
+
+        function displayLearningContent() {
+            const learningLines = [
+                "Looks like someone's eager to learn about Generative AI.",
+                "We'll start off with Lesson 1: Understanding Gen AI!",
+                "Generative AI refers to artificial intelligence systems that can generate new content like text, images, or music by learning patterns from existing data.",
+                "Common uses include generating art, writing stories, composing music, and more.",
+                "Humans learn by making mistakes and learning from past experiences. For us AI, we are the same. AI learns from data using machine learning, deep learning, and large language models. As we learn, we get smarter, just like you do.",
+                "You've likely seen us already in your lives. Like in:",
+                "Virtual assistants, Siri and Alexa...",
+                "Your personalized social media feeds...",
+                "And even your email spam filter!",
+                "Example: OpenAI's GPT-3 can generate human-like text based on a prompt. Understand?"
+            ];
+
+            learningLines.forEach((line, index) => {
+                setTimeout(() => {
+                    line = highlightSpecificWords(line); // Apply highlight function to learning lines
+                    appendLine(line);
+                    if (index === learningLines.length - 1) {
+                        setTimeout(displayDialogueOptions, 800);
+                    }
+                }, index * 800);
+            });
+            appendSectionBreak();
+        }
+
+        function displayDialogueOptions() {
+            const option1 = document.createElement('p');
+            option1.textContent = "1) Sorry, could you repeat that again? I didn't catch that very well.";
+            option1.classList.add('dialogue-option', 'yellow-text');
+            option1.addEventListener('click', handleOption1);
+            terminal.insertBefore(option1, input.parentElement);
+
+            const option2 = document.createElement('p');
+            option2.textContent = "2) Yeah, got it!";
+            option2.classList.add('dialogue-option', 'yellow-text');
+            option2.addEventListener('click', handleOption2);
+            terminal.insertBefore(option2, input.parentElement);
+
+            appendLine(" ");
+            const sectionBreak = document.createElement('hr');
+            terminal.appendChild(sectionBreak);
+        }
+
+        function handleOption1() {
+            disableOptions();
+            const responseLines = [
+                "No problem, let me explain it in simpler terms.",
+                "Imagine teaching a child how to draw. At first, the child copies what they've seen, like drawing circles or squiggles, based on the pictures they were shown.",
+                "Generative AI works the same way! It learns patterns from data (just like the child learning from pictures) and then creates new content like art, text, or music.",
+                "And you can use those pictures for all sorts of things! Like school, work, and even for fun.",
+                "I think you're ready. Let's test your understanding with a pop quiz!"
+            ];
+
+            responseLines.forEach((line, index) => {
+                setTimeout(() => {
+                    appendLine(line);
+                    if (index === responseLines.length - 1) {
+                        document.getElementById('game-popup-button').style.display = 'block';
+                    }
+                }, index * 800);
+            });
+        }
+
+        function handleOption2() {
+            disableOptions();
+            const responseLines = [
+                "That's what I'd like to hear.",
+                "Ready for a challenge? Let's test your understanding with a pop quiz."
+            ];
+
+            responseLines.forEach((line, index) => {
+                setTimeout(() => {
+                    appendLine(line);
+                    if (index === responseLines.length - 1) {
+                        document.getElementById('game-popup-button').style.display = 'block';
+                    }
+                }, index * 800);
+            });
+        }
+
+        function disableOptions() {
+            document.querySelectorAll('.dialogue-option').forEach(option => {
+                option.style.pointerEvents = 'none';
+                option.style.color = '#555';
+            });
+        }
+
+        function appendSectionBreak() {
+            const breakLine = document.createElement('p');
+            breakLine.innerHTML = "<br><hr><br>";
+            terminal.insertBefore(breakLine, input.parentElement);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('click-to-continue')) {
+                showNextLine();
+            }
+        });
+
+        showNextLine();
+
+        input.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                const command = input.value.trim().toLowerCase();
+                appendLine(command, 'input-line');
+                input.value = '';
+                processCommand(command);
+            }
+        });
+
+        function processCommand(command) {
+            if (command === 'learn') {
+                displayLearningContent();
+            } else {
+                appendLine("I said... type [learn]! Come on now, I'm sure you know it!", 'cheeky-message');
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
