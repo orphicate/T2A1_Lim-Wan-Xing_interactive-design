@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <title>Lesson 2: Common Features of Gen AI Applications</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        body {
+            background: #2A2356;
+            color: #6EcbF5;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: left;
+            padding: 20px;
+            display: flex;
+        }
+
+        .terminal {
+            width: 70%;
+            background: #1A1A2E;
+            padding: 20px;
+            border: 2px solid #586AE2;
+            border-radius: 5px;
+            min-height: 400px;
+            overflow-y: auto;
+        }
+
+        .input-line {
+            color: #C252E1;
+        }
+
+        .glitch-text {
+            font-size: 1.2rem;
+            text-shadow: 2px 2px #C252E1, -2px -2px #E0D9F6;
+            animation: glitch 0.5s infinite alternate;
+        }
+
+        .yellow-text {
+            color: #FFDD00;
+            cursor: pointer;
+        }
+
+        .dialogue-option {
+            font-size: 1rem;
+            margin: 10px 0;
+            transition: 0.3s;
+        }
+
+        .dialogue-option:hover {
+            text-decoration: underline;
+        }
+
+        .highlight {
+            color: #FFDD00;
+        }
+
+        .line-colour {
+            color: aqua;
+        }
+
+        .lesson-image {
+            height: auto;
+            width: auto;
+            max-width: 550px;
+            max-height: 250px;
+            display: none;
+            margin-left: 20px;
+            border-radius: 8px;
+        }
+
+        .lesson-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        @keyframes glitch {
+            from {
+                text-shadow: 2px 2px #C252E1, -2px -2px #E0D9F6;
+            }
+            to {
+                text-shadow: -2px -2px #C252E1, 2px 2px #E0D9F6;
+            }
+        }
+
+        .game-popup-button {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            padding: 15px;
+            background: #FF66B2;
+            color: #FFFFFF;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 60%;
+            max-width: 300px;
+            text-transform: uppercase;
+        }
+        .game-popup-button:hover {
+            background: #FFDD00;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="lesson-container">
+        <div class="terminal" id="terminal">
+            <p class="glitch-text">Welcome to AI-Lab Terminal</p>
+        </div>
+        <img id="lesson-image" class="lesson-image" src="" alt="Lesson Image">
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const lessonImage = document.getElementById('lesson-image');
+        let currentLineIndex = 0;
+        let optionSelected = false;
+        let lessonLines = [];
+
+        const dialogueLines = [
+            "Snore...snore...",
+            "Whoa! You scared me! You sure completed that quiz quick.",
+            "And accurately too? You're quite a fast learner. Well, how are you feeling? Ready for Lesson 2?"
+        ];
+
+        const lessonText = {
+            option1: [
+                "Such enthusiasm, you're making me pumped up too! <span class='line-colour'>(Manually click to progress here!)</span>",
+                "Now moving on to <span class='highlight'>Lesson 2: Common Features of Gen AI Applications!</span>",
+                "Let's talk about <span class='highlight'>Text-Generation AI applications and their 6 common main features.",
+                "Examples of them are ChatGPT and Gemini. For the following explanation, I'll use Gemini's interface.",
+                "1) <span class='highlight'>Greetings and Introductions</span>: This is where the application will greet you, the user.",
+                "2) <span class='highlight'>Response area</span>: The application responds with a text message / image in this area where you can read its response.",
+                "3) <span class='highlight'>Text input field</span>: Where you can type in messages or questions to the application.",
+                "4) <span class='highlight'>Voice/Image input</span>: user can speak to the application and/or insert an image.",
+                "5) <span class='highlight'>Chat History</span>: where you can view your previous chats with the application.",
+                "6) <span class='highlight'>Account Settings</span>: Where you can adjust settings such as language.",
+                "You got all that? Take some time to process it!"
+            ],
+            option2: [
+                "Hey, that's no attitude for an adventure! <span class='line-colour'>(Manually click to progress here!)</span>",
+                "Come on! Let's move on to <span class='highlight'>Lesson 2: Common Features of Gen AI Applications!</span>",
+                "Let's talk about <span class='highlight'>Text-Generation AI applications and their 6 common main features.",
+                "Examples of them are ChatGPT and Gemini. For the following explanation, I'll use Gemini's interface.",
+                "1) <span class='highlight'>Greetings and Introductions</span>: This is where the application will greet you, the user.",
+                "2) <span class='highlight'>Response area</span>: The application responds with a text message / image in this area where you can read its response.",
+                "3) <span class='highlight'>Text input field</span>: Where you can type in messages or questions to the application.",
+                "4) <span class='highlight'>Voice/Image input</span>: user can speak to the application and/or insert an image.",
+                "5) <span class='highlight'>Chat History</span>: where you can view your previous chats with the application.",
+                "6) <span class='highlight'>Account Settings</span>: Where you can adjust settings such as language.",
+                "You got all that? Take some time to process it!"
+            ]
+        };
+
+        const images = {
+            4: "GEMINI (1).png",
+            5: "GEMINI (2).png",
+            6: "GEMINI (3).png",
+            7: "GEMINI (4).png",
+            8: "GEMINI (5).png",
+            9: "GEMINI (6).png"
+        };
+
+        function appendLine(text) {
+            const p = document.createElement('p');
+            p.innerHTML = text;
+            terminal.appendChild(p);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function showNextLine() {
+            if (currentLineIndex < dialogueLines.length) {
+                appendLine(dialogueLines[currentLineIndex]);
+                currentLineIndex++;
+                setTimeout(showNextLine, 800);
+            } else {
+                displayLessonOptions();
+            }
+        }
+
+        function displayLessonOptions() {
+            const option1 = document.createElement('p');
+            option1.textContent = "1) Awesome, let's get on with it!";
+            option1.classList.add('dialogue-option', 'yellow-text');
+            option1.addEventListener('click', () => handleOptionSelection('option1', option1, option2));
+            terminal.appendChild(option1);
+
+            const option2 = document.createElement('p');
+            option2.textContent = "2) Wait a moment... I'm tired!";
+            option2.classList.add('dialogue-option', 'yellow-text');
+            option2.addEventListener('click', () => handleOptionSelection('option2', option1, option2));
+            terminal.appendChild(option2);
+        }
+
+        function handleOptionSelection(option, option1, option2) {
+            if (optionSelected) return;
+            optionSelected = true;
+            option1.style.color = '#777';
+            option2.style.color = '#777';
+            option1.style.pointerEvents = 'none';
+            option2.style.pointerEvents = 'none';
+
+            appendLine(" ");
+            lessonLines = lessonText[option];
+            currentLineIndex = 0;
+            terminal.addEventListener('click', showLessonLine);
+
+            appendLine(" ");
+            // Add a section break (horizontal rule)
+            const sectionBreak = document.createElement('hr');
+            terminal.appendChild(sectionBreak);
+        }
+
+        function showLessonLine() {
+            if (currentLineIndex < lessonLines.length) {
+                appendLine(lessonLines[currentLineIndex]);
+
+                if (images[currentLineIndex]) {
+                    lessonImage.src = images[currentLineIndex];
+                    lessonImage.style.display = "block";
+                } else {
+                    lessonImage.style.display = "none";
+                }
+
+                currentLineIndex++;
+            } else {
+                terminal.removeEventListener('click', showLessonLine);
+                displayNewOptions();  // Display new options after the lesson
+            }
+        }
+
+        function displayNewOptions() {
+            const option1 = document.createElement('p');
+            option1.textContent = "1) Whoa... that's a lot to take in! Any summary for me, my robopal?";
+            option1.classList.add('dialogue-option', 'yellow-text');
+            option1.addEventListener('click', () => handleSummaryOption(option1, option2));
+            terminal.appendChild(option1);
+
+            const option2 = document.createElement('p');
+            option2.textContent = "2) Piece of cake! Shoot the quiz at me, I got this!";
+            option2.classList.add('dialogue-option', 'yellow-text');
+            option2.addEventListener('click', () => handleConfidenceOption(option1, option2));
+            terminal.appendChild(option2);
+
+            appendLine(" ");
+            // Add a section break (horizontal rule)
+            const sectionBreak = document.createElement('hr');
+            terminal.appendChild(sectionBreak);
+        }
+
+        // Show corresponding dialogue for the summary option with delays
+        function handleSummaryOption(option1, option2) {
+            option1.style.color = '#777';
+            option2.style.color = '#777';
+            option1.style.pointerEvents = 'none';
+            option2.style.pointerEvents = 'none';
+
+            setTimeout(() => appendLine("You sure have some cheek, don't you!"), 800);
+            setTimeout(() => appendLine("Lesson 2 covered Text-Generation AI applications, and their 6 main features:"), 1600);
+            setTimeout(() => appendLine("1) Greetings and Introductions."), 2400);
+            setTimeout(() => appendLine("2) Response area."), 3200);
+            setTimeout(() => appendLine("3) Text input field."), 4000);
+            setTimeout(() => appendLine("4) Voice/Image input."), 4800);
+            setTimeout(() => appendLine("5) Chat History."), 5600);
+            setTimeout(() => appendLine("6) Account Settings."), 6400);
+            setTimeout(() => appendLine("Alright, no more hints! Won't want to spoil the quiz for you now, will I?"), 7200);
+            setTimeout(() => appendLine("Next up, Lesson 2's quiz!"), 8000);
+
+            // Display the "Start the Game" button after the line "Next up, Lesson 2's quiz!"
+            setTimeout(displayStartButton, 9000);
+        }
+
+        // Show corresponding dialogue for the confidence option with delays
+        function handleConfidenceOption(option1, option2) {
+            option1.style.color = '#777';
+            option2.style.color = '#777';
+            option1.style.pointerEvents = 'none';
+            option2.style.pointerEvents = 'none';
+
+            setTimeout(() => appendLine("Confident now, are we!"), 800);
+            setTimeout(() => appendLine("If I had a mouth, I'm sure I'd be chuckling right now."), 1600);
+            setTimeout(() => appendLine("Let's test that bravado of yours. Back to business!"), 2400);
+            setTimeout(() => appendLine("Next up, Lesson 2's quiz!"), 3200);
+
+            // Display the "Start the Game" button after the line "Next up, Lesson 2's quiz!"
+            setTimeout(displayStartButton, 3300);
+        }
+
+        // Function to display the "Start the Game" button
+        function displayStartButton() {
+            const startButton = document.createElement('button');
+            startButton.classList.add('game-popup-button');
+            startButton.textContent = 'Start the Game';
+            startButton.style.display = 'inline-block';  // Make the button visible
+            startButton.addEventListener('click', () => {
+        window.location.href = 'game (2).html'; 
+    });
+            terminal.appendChild(startButton);
+        }
+
+        showNextLine();
+    </script>
+
+</body>
+</html>
+
+
+

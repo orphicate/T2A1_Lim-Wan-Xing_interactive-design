@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <title>Lesson 3: How to Write Prompts for Generative AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        body {
+            background: #2A2356;
+            color: #6EcbF5;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: left;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal {
+            width: 70%;
+            background: #1A1A2E;
+            padding: 20px;
+            border: 2px solid #586AE2;
+            border-radius: 5px;
+            min-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-line {
+            color: #C252E1;
+        }
+
+        .glitch-text {
+            font-size: 1.2rem;
+            text-shadow: 2px 2px #C252E1, -2px -2px #E0D9F6;
+            animation: glitch 0.5s infinite alternate;
+        }
+
+        .yellow-text {
+            color: #FFDD00;
+            cursor: pointer;
+        }
+
+        .dialogue-option {
+            font-size: 1rem;
+            margin: 10px 0;
+            transition: 0.3s;
+        }
+
+        .dialogue-option:hover {
+            text-decoration: underline;
+        }
+
+        .highlight {
+            color: #FFDD00;
+        }
+
+        .line-colour {
+            color: aqua;
+        }
+
+        /* Search bar styling inside terminal */
+        .search-bar {
+            display: block;
+            width: 50%;
+            padding: 10px;
+            background-color: #2A2356;
+            border: 2px solid #586AE2;
+            border-radius: 5px;
+            color: #6EcbF5;
+            font-family: 'Share Tech Mono', monospace;
+            margin-top: 20px; /* Adds space between terminal content and search bar */
+            box-sizing: border-box;
+        }
+
+        .search-bar::placeholder {
+            color: #6EcbF5;
+            font-size: 1.1rem;
+        }
+
+        @keyframes glitch {
+            from {
+                text-shadow: 2px 2px #C252E1, -2px -2px #E0D9F6;
+            }
+            to {
+                text-shadow: -2px -2px #C252E1, 2px 2px #E0D9F6;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terminal" id="terminal">
+        <p class="glitch-text">Goodbye from the AI-Lab Terminal...</p>
+    </div>
+
+    <!-- The search bar will appear below the last line of the terminal content -->
+    <input type="text" id="search-bar" class="search-bar" placeholder="Type [lesson 1], [lesson 2], [lesson 3], or [lesson 4]" onkeyup="checkSearch()" style="display: none;">
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        const searchBar = document.getElementById('search-bar');
+        let currentLineIndex = 0;
+        let optionSelected = false;
+        let lessonLines = [];
+
+        const dialogueLines = [
+            "You did it! Congratulations!",
+            "I'll just summarise everything for you, and then you can go your merry way.",
+            "You've learnt a lot of things so far!",
+            "What Generative AI is, functions commonly appearing in their applications, how to use it, what are the risks when using it..."
+        ];
+
+        const lessonText = {
+            option1: [
+                "Attentive as always, aren't you! <span class='line-colour'>(Manually click to progress here!)</span>",
+                "Now, pay attention! <span class='highlight'>Summary time!</span>",
+                "AI is the science of teaching machines to mimic intelligent human behaviors.",
+                "Gen AI are <span class='highlight'>computer programs that use artificial intelligence to create new content, like text, audio, images etc</span>.",
+                "Some <span class='highlight'>examples of Gen AI programs are ChatGPT and Gemini/span>. They can be <span class='highlight'>used for school, work, leisure and many other purposes/span>.",
+                "There are 6 main, common features of Gen AI applications. Greetings and introductions, Response area, Text input field, Voice/Image Input, Chat History and Account Settings.",
+                "To properly utilise Gen AI tools efficiently, you need to write good prompts.",
+                "They follow the format of Persona, Task, Audience, Context and Format.",
+                "Risks of using Gen AI include the generation of misinformation, deepfakes, false content and copyright infringements.",
+                "To identify AI-generated misinformation, check the <span class='highlight'>Source</span>, <span class='highlight'>Understand</span> the information you read online, <span class='highlight'>Research</span> the authenticity of every article, <span class='highlight'>Evaluate</span> the information from various angles.",
+                "And that's all from me. See you now!"
+            ],
+            option2: [
+                "...I'm not even going to comment on that. <span class='line-colour'>(Manually click to progress here!)</span>",
+                "Pay attention! <span class='highlight'>Summary time!</span>",
+                "AI is the science of teaching machines to mimic intelligent human behaviors.",
+                "Gen AI are <span class='highlight'>computer programs that use artificial intelligence to create new content, like text, audio, images etc</span>.",
+                "Some <span class='highlight'>examples of Gen AI programs are ChatGPT and Gemini/span>. They can be <span class='highlight'>used for school, work, leisure and many other purposes/span>.",
+                "There are 6 main, common features of Gen AI applications. Greetings and introductions, Response area, Text input field, Voice/Image Input, Chat History and Account Settings.",
+                "To properly utilise Gen AI tools efficiently, you need to write good prompts.",
+                "They follow the format of Persona, Task, Audience, Context and Format.",
+                "Risks of using Gen AI include the generation of misinformation, deepfakes, false content and copyright infringements.",
+                "To identify AI-generated misinformation, check the <span class='highlight'>Source</span>, <span class='highlight'>Understand</span> the information you read online, <span class='highlight'>Research</span> the authenticity of every article, <span class='highlight'>Evaluate</span> the information from various angles.",
+                "And that's all from me. See you now!"
+            ]
+        };
+
+        function appendLine(text) {
+            const p = document.createElement('p');
+            p.innerHTML = text;
+            terminal.appendChild(p);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function showNextLine() {
+            if (currentLineIndex < dialogueLines.length) {
+                appendLine(dialogueLines[currentLineIndex]);
+                currentLineIndex++;
+                setTimeout(showNextLine, 800);
+            } else {
+                displayLessonOptions();
+            }
+        }
+
+        function displayLessonOptions() {
+            const option1 = document.createElement('p');
+            option1.textContent = "1) ... and how to spot AI-generated misinformation!";
+            option1.classList.add('dialogue-option', 'yellow-text');
+            option1.addEventListener('click', () => handleOptionSelection('option1', option1, option2));
+            terminal.appendChild(option1);
+
+            const option2 = document.createElement('p');
+            option2.textContent = "2) Zzzz..Zzzzz..";
+            option2.classList.add('dialogue-option', 'yellow-text');
+            option2.addEventListener('click', () => handleOptionSelection('option2', option1, option2));
+            terminal.appendChild(option2);
+        }
+
+        function handleOptionSelection(option, option1, option2) {
+            if (optionSelected) return;
+            optionSelected = true;
+            option1.style.color = '#777';
+            option2.style.color = '#777';
+            option1.style.pointerEvents = 'none';
+            option2.style.pointerEvents = 'none';
+
+            appendLine(" ");
+            
+            // Moved section break creation outside of conditionals
+            const sectionBreak = document.createElement('hr');
+            terminal.appendChild(sectionBreak);
+
+            lessonLines = lessonText[option];
+            currentLineIndex = 0;
+            terminal.addEventListener('click', showLessonLine);
+
+            appendLine(" ");
+        }
+
+        function showLessonLine() {
+            if (currentLineIndex < lessonLines.length) {
+                appendLine(lessonLines[currentLineIndex]);
+                currentLineIndex++;
+            } else {
+                terminal.removeEventListener('click', showLessonLine);
+                displayNewOptions();
+            }
+        }
+
+        function displayNewOptions() {
+            const option1 = document.createElement('p');
+            option1.textContent = "1) What if I want to come back to visit?";
+            option1.classList.add('dialogue-option', 'yellow-text');
+            option1.addEventListener('click', () => handleSummaryOption(option1, option2));
+            terminal.appendChild(option1);
+
+            const option2 = document.createElement('p');
+            option2.textContent = "2) Wait... is this the last I'll really see of you?";
+            option2.classList.add('dialogue-option', 'yellow-text');
+            option2.addEventListener('click', () => handleConfidenceOption(option1, option2));
+            terminal.appendChild(option2);
+
+            appendLine(" ");
+        }
+
+        function handleSummaryOption(option1, option2) {
+            option1.style.color = '#777';
+            option2.style.color = '#777';
+            option1.style.pointerEvents = 'none';
+            option2.style.pointerEvents = 'none';
+
+            setTimeout(() => appendLine("..."), 800);
+            setTimeout(() => appendLine("What, missing me so soon?"), 1600);
+            setTimeout(() => appendLine("Don't worry, the typing commands still work."), 2400);
+            setTimeout(() => appendLine("<span class='line-colour'>(You can still type [learn] to replay all the lessons! Use [score] to keep track of your medals.)</span>"), 3200);
+            setTimeout(() => appendLine("<span class='line-colour'>(This is the end. Thank you for playing!)</span>"), 4000);
+            setTimeout(() => appendLine("I'm sure we will meet again."), 4800);
+
+            setTimeout(() => {
+                searchBar.style.display = 'block';
+            }, 5000);
+        }
+
+        function handleConfidenceOption(option1, option2) {
+            option1.style.color = '#777';
+            option2.style.color = '#777';
+            option1.style.pointerEvents = 'none';
+            option2.style.pointerEvents = 'none';
+
+            setTimeout(() => appendLine("..."), 800);
+            setTimeout(() => appendLine("What, missing me so soon?"), 1600);
+            setTimeout(() => appendLine("Don't worry, the typing commands still work."), 2400);
+            setTimeout(() => appendLine("<span class='line-colour'>(You can still type [lesson (number)] to replay all the lessons!</span>"), 3200);
+            setTimeout(() => appendLine("<span class='line-colour'>(This is the end. Thank you for playing!)</span>"), 4000);
+            setTimeout(() => appendLine("I'm sure we will meet again."), 4800);
+
+            setTimeout(() => {
+                searchBar.style.display = 'block';
+            }, 5000);
+        }
+
+        function checkSearch() {
+            const searchQuery = searchBar.value.trim().toLowerCase();
+            if (searchQuery === 'lesson 1') {
+                window.location.href = 'home.html';
+            } else if (searchQuery === 'lesson 2') {
+                window.location.href = 'lesson2.html';
+            } else if (searchQuery === 'lesson 3') {
+                window.location.href = 'lesson 3.html';
+            } else if (searchQuery === 'lesson 4') {
+                window.location.href = 'lesson 4.html';
+            }
+        }
+
+        showNextLine();
+    </script>
+
+</body>
+</html>
+
+

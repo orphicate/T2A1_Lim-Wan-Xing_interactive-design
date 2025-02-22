@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <title>Lesson 3: How to Write Prompts for Generative AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        body {
+            background: #2A2356;
+            color: #6EcbF5;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: left;
+            padding: 20px;
+            display: flex;
+        }
+
+        .terminal {
+            width: 70%;
+            background: #1A1A2E;
+            padding: 20px;
+            border: 2px solid #586AE2;
+            border-radius: 5px;
+            min-height: 400px;
+            overflow-y: auto;
+        }
+
+        .input-line {
+            color: #C252E1;
+        }
+
+        .glitch-text {
+            font-size: 1.2rem;
+            text-shadow: 2px 2px #C252E1, -2px -2px #E0D9F6;
+            animation: glitch 0.5s infinite alternate;
+        }
+
+        .yellow-text {
+            color: #FFDD00;
+            cursor: pointer;
+        }
+
+        .dialogue-option {
+            font-size: 1rem;
+            margin: 10px 0;
+            transition: 0.3s;
+        }
+
+        .dialogue-option:hover {
+            text-decoration: underline;
+        }
+
+        .highlight {
+            color: #FFDD00;
+        }
+
+        .line-colour {
+            color: aqua;
+        }
+        
+        .game-popup-button {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            padding: 15px;
+            background: #FF66B2;
+            color: #FFFFFF;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 60%;
+            max-width: 300px;
+            text-transform: uppercase;
+        }
+        .game-popup-button:hover {
+            background: #FFDD00;
+        }
+
+        @keyframes glitch {
+            from {
+                text-shadow: 2px 2px #C252E1, -2px -2px #E0D9F6;
+            }
+            to {
+                text-shadow: -2px -2px #C252E1, 2px 2px #E0D9F6;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terminal" id="terminal">
+        <p class="glitch-text">Welcome to AI-Lab Terminal</p>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal');
+        let currentLineIndex = 0;
+        let optionSelected = false;
+        let lessonLines = [];
+
+        const dialogueLines = [
+            "No way...",
+            "How'd you finish that so fast!",
+            "Well, that's half the lessons down. Don't fall asleep now!",
+            "We're off to Lesson 3!"
+        ];
+
+        const lessonText = {
+            option1: [
+                "I like your style. Aye aye, captain! <span class='line-colour'>(Manually click to progress here!)</span>",
+                "We're cruising on to <span class='highlight'>Lesson 3: How to Write Prompts for Generative AI!</span>",
+                "When you use Generative AI, you need a prompt for it to follow your instructions.",
+                "A good prompt has 5 key components:",
+                "1) <span class='highlight'>Persona</span>: A subject involved, like you, or your mother.",
+                "2) <span class='highlight'>Context</span>: Why you're typing this prompt",
+                "3) <span class='highlight'>Audience</span>: Who it is for.",
+                "4) <span class='highlight'>Task</span>: What you want the AI to do.",
+                "5) <span class='highlight'>Format</span>: How you want the AI to present it.",
+                "For example, instead of asking AI 'Give me ideas on how to start baking</span>'',",
+                "You can say: <span class='highlight'>Act as my baking instructor. I want to learn baking to surprise my girlfriend on Valentine's Day with a dessert. I have no prior baking experience. Teach me a recipe that is simple to make, while being tasty and beautiful.</span>",
+                "Got it?"
+            ],
+            option2: [
+                "Could say the same for you. Let's finish this soon... for you and me! <span class='line-colour'>(Manually click to progress here!)</span>",
+                "Now let's go slowpoke, to <span class='highlight'>Lesson 3: How to Write Prompts for Generative AI!</span>",
+                "When you use Generative AI, you need a prompt for it to follow your instructions.",
+                "A good prompt has 5 key components:",
+                "1) <span class='highlight'>Persona</span>: A subject involved, like you, or your mother.",
+                "2) <span class='highlight'>Context</span>: Why you're typing this prompt",
+                "3) <span class='highlight'>Audience</span>: Who it is for.",
+                "4) <span class='highlight'>Task</span>: What you want the AI to do.",
+                "5) <span class='highlight'>Format</span>: How you want the AI to present it.",
+                "For example, instead of asking AI 'Give me ideas on how to start baking</span>'',",
+                "You can say: <span class='highlight'>Act as my baking instructor. I want to learn baking to surprise my girlfriend on Valentine's Day with a dessert. I have no prior baking experience. Teach me a recipe that is simple to make, while being tasty and beautiful.</span>",
+                "Got it?"
+            ]
+        };
+
+        function appendLine(text) {
+            const p = document.createElement('p');
+            p.innerHTML = text;
+            terminal.appendChild(p);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        function showNextLine() {
+            if (currentLineIndex < dialogueLines.length) {
+                appendLine(dialogueLines[currentLineIndex]);
+                currentLineIndex++;
+                setTimeout(showNextLine, 800);
+            } else {
+                displayLessonOptions();
+            }
+        }
+
+        function displayLessonOptions() {
+            const option1 = document.createElement('p');
+            option1.textContent = "1) This'll be a piece of cake. Let's go!";
+            option1.classList.add('dialogue-option', 'yellow-text');
+            option1.addEventListener('click', () => handleOptionSelection('option1', option1, option2));
+            terminal.appendChild(option1);
+
+            const option2 = document.createElement('p');
+            option2.textContent = "2) This... is such a chore.";
+            option2.classList.add('dialogue-option', 'yellow-text');
+            option2.addEventListener('click', () => handleOptionSelection('option2', option1, option2));
+            terminal.appendChild(option2);
+        }
+
+        function handleOptionSelection(option, option1, option2) {
+            if (optionSelected) return;
+            optionSelected = true;
+            option1.style.color = '#777';
+            option2.style.color = '#777';
+            option1.style.pointerEvents = 'none';
+            option2.style.pointerEvents = 'none';
+
+            appendLine(" ");
+            lessonLines = lessonText[option];
+            currentLineIndex = 0;
+            terminal.addEventListener('click', showLessonLine);
+
+            appendLine(" ");
+            // Add a section break (horizontal rule)
+            const sectionBreak = document.createElement('hr');
+            terminal.appendChild(sectionBreak);
+        }
+
+        function showLessonLine() {
+            if (currentLineIndex < lessonLines.length) {
+                appendLine(lessonLines[currentLineIndex]);
+                currentLineIndex++;
+            } else {
+                terminal.removeEventListener('click', showLessonLine);
+                displayNewOptions();  // Display new options after the lesson
+            }
+        }
+
+        function displayNewOptions() {
+            const option1 = document.createElement('p');
+            option1.textContent = "1) Skipped, hit me with the summary please!";
+            option1.classList.add('dialogue-option', 'yellow-text');
+            option1.addEventListener('click', () => handleSummaryOption(option1, option2));
+            terminal.appendChild(option1);
+
+            const option2 = document.createElement('p');
+            option2.textContent = "2) Too easy... I nearly fell asleep!";
+            option2.classList.add('dialogue-option', 'yellow-text');
+            option2.addEventListener('click', () => handleConfidenceOption(option1, option2));
+            terminal.appendChild(option2);
+
+            appendLine(" ");
+            // Add a section break (horizontal rule)
+            const sectionBreak = document.createElement('hr');
+            terminal.appendChild(sectionBreak);
+        }
+
+        // Show corresponding dialogue for the summary option with delays
+        function handleSummaryOption(option1, option2) {
+            option1.style.color = '#777';
+            option2.style.color = '#777';
+            option1.style.pointerEvents = 'none';
+            option2.style.pointerEvents = 'none';
+
+            setTimeout(() => appendLine("Why you cheeky little..."), 800);
+            setTimeout(() => appendLine("Pay attention! You're almost there already!:"), 1600);
+            setTimeout(() => appendLine("A good prompt needs you to have 5 main parts."), 2400);
+            setTimeout(() => appendLine("Who, What, Why, When, How!"), 3200);
+            setTimeout(() => appendLine("Be specific and clear when prompting."), 4000);
+            setTimeout(() => appendLine("Alright, to Lesson 3's quiz! This one's simple enough."), 4800);
+            setTimeout(showGamePopupButton, 5000);  // Show the button after response lines
+        }
+
+        // Show corresponding dialogue for the confidence option with delays
+        function handleConfidenceOption(option1, option2) {
+            option1.style.color = '#777';
+            option2.style.color = '#777';
+            option1.style.pointerEvents = 'none';
+            option2.style.pointerEvents = 'none';
+
+            setTimeout(() => appendLine("Wake up!"), 800);
+            setTimeout(() => appendLine("I hope you got this quiz in the bag, with your confidence."), 1600);
+            setTimeout(() => appendLine("On to it! This one's simple enough."), 2400);
+            setTimeout(() => appendLine("Lesson 3's quiz!"), 3200);
+            setTimeout(showGamePopupButton, 3400);  // Show the button after response lines
+        }
+
+        function showGamePopupButton() {
+            const button = document.createElement('button');
+            button.classList.add('game-popup-button');
+            button.innerText = "Start the Game!";
+            button.onclick = () => window.location.href = "game (3).html";
+            terminal.appendChild(button);
+            button.style.display = 'block';  // Make the button visible
+        }
+
+        showNextLine();
+    </script>
+
+</body>
+</html>
+
+

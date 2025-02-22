@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <title>Match the Functions Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        body {
+            background: #2A2356;
+            color: #6EcbF5;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        /* Floating stars background */
+        .floating-stars {
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            width: 100%;
+            height: 100%;
+            background: url('https://example.com/space-background.png') repeat;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Title */
+        h1 {
+            font-size: 2.5rem;
+            color: #FFDD00;
+            margin-bottom: 20px;
+        }
+
+        /* Instructions Screen */
+        .instructions-container {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 0 auto;
+            width: 60%;
+            max-width: 600px;
+            color: #FFDD00;
+            box-shadow: 0 0 20px rgba(255, 102, 178, 0.5);
+            text-align: center;
+        }
+
+        .instructions-container p {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .start-button {
+            padding: 10px 20px;
+            background: #FF66B2;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .start-button:hover {
+            background: #FF80E0;
+        }
+
+        /* Game Screen */
+        .game-container {
+            display: none;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 1200px;
+            text-align: center;
+        }
+
+        /* Left Column (Non-Interactive Numbered Boxes) */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .box {
+            width: 300px;
+            height: 50px;
+            margin: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #FFDD00;
+            border: 2px solid #FF66B2;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: not-allowed;
+        }
+
+        /* Center Image (Larger Placeholder) */
+        .image-placeholder {
+            width: 400px;
+            height: 300px;
+            background: #444;
+            margin: 30px;
+            display: block;
+        }
+
+        /* Right Column (Selectable Labels) */
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .box.right {
+            width: 300px;
+            height: 50px;
+            margin: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #FFDD00;
+            border: 2px solid #FF66B2;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .box.right:hover {
+            background: #2A2356;
+        }
+
+        .box.right.selected {
+            background: #3B3B6A;
+        }
+
+        /* Message after selecting an answer */
+        .message {
+            color: rgb(239, 85, 203);
+            font-size: 2rem;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* Game Completion Popup */
+        .game-completion-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #FF66B2;
+            width: 50%;
+            max-width: 600px;
+            color: #FFDD00;
+            box-shadow: 0 0 20px rgba(255, 102, 178, 0.5);
+            z-index: 20;
+        }
+
+        .game-completion-popup .message {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .game-completion-popup button {
+            background: #6EcbF5;
+            border: none;
+            color: #2A2356;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .game-completion-popup button:hover {
+            background: #FF66B2;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Title -->
+    <h1 id="game-title">Match the Functions</h1>
+
+    <!-- Instructions Screen -->
+    <div class="instructions-container" id="instructions-screen">
+        <p>Click on the boxes on the right side of the screen to match the functions in the picture in order!</p>
+        <button class="start-button" id="start-btn">Start</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div class="game-container" id="game-screen">
+        <div class="left-column">
+            <!-- Left Column (Non-Interactive Numbered Boxes) -->
+            <div class="box" id="box-1">1.</div>
+            <div class="box" id="box-2">2.</div>
+            <div class="box" id="box-3">3.</div>
+            <div class="box" id="box-4">4.</div>
+            <div class="box" id="box-5">5.</div>
+            <div class="box" id="box-6">6.</div>
+        </div>
+
+        <div>
+            <!-- Center Image (Larger Placeholder) -->
+            <div class="image-placeholder" id="image-placeholder">
+                <img src="GEMINI QUIZ (7).png" alt="Image Description" width="400" height="300">
+            </div>
+            <!-- Feedback Message -->
+            <div class="message" id="message"></div>
+        </div>
+
+        <div class="right-column">
+            <!-- Right Column (Selectable Labels) -->
+            <div class="box right" id="chat-history" onclick="handleBoxClick('chat-history')">Chat History</div>
+            <div class="box right" id="text-input" onclick="handleBoxClick('text-input')">Text input field</div>
+            <div class="box right" id="response" onclick="handleBoxClick('response')">Response area</div>
+            <div class="box right" id="account-settings" onclick="handleBoxClick('account-settings')">Account Settings</div>
+            <div class="box right" id="greetings" onclick="handleBoxClick('greetings')">Greetings and Introductions</div>
+            <div class="box right" id="voice-input" onclick="handleBoxClick('voice-input')">Voice/Image input</div>
+        </div>
+    </div>
+
+    <!-- Game Completion Popup -->
+    <div class="game-completion-popup" id="completion-popup" style="display: none;">
+        <div class="message">Amazing Job! You got a new medal: Intermediate Hacker.</div>
+        <div class="message">Collect 2 more medals to graduate!</div>
+        <button onclick="window.location.href='lesson 3.html'">Lesson 3: How to Write Prompts for Generative AI</button>
+    </div>
+
+    <!-- Floating stars background -->
+    <div class="floating-stars"></div>
+
+    <script>
+        let gameStarted = false;
+        const correctOrder = ["greetings", "response", "text-input", "voice-input", "chat-history", "account-settings"];
+        let currentMatchIndex = 0;
+
+        // Added event listener to ensure button works after DOM is loaded
+        document.getElementById('start-btn').addEventListener('click', startGame);
+
+        function startGame() {
+            // Hide instructions and show the game screen
+            document.getElementById('instructions-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            document.getElementById('game-title').style.display = 'none'; // Hide the title after the game starts
+
+            gameStarted = true;
+        }
+
+        function handleBoxClick(boxId) {
+            if (!gameStarted) return;
+
+            const leftBox = document.getElementById(`box-${currentMatchIndex + 1}`);
+            const selectedBox = document.getElementById(boxId);
+
+            if (correctOrder[currentMatchIndex] === boxId) {
+                // Correct match
+                leftBox.innerText = selectedBox.innerText;
+                leftBox.classList.add('selected');
+                selectedBox.classList.add('selected');
+                currentMatchIndex++;
+
+                // Move on to next if correct
+                if (currentMatchIndex === correctOrder.length) {
+                    setTimeout(() => {
+                        showGameCompletionPopup(); // Show the popup after completion
+                    }, 500);
+                }
+            } else {
+                // Wrong match
+                document.getElementById('message').innerText = "Try Again!";
+                setTimeout(() => {
+                    document.getElementById('message').innerText = "";
+                }, 1000);
+            }
+        }
+
+        function showGameCompletionPopup() {
+            document.getElementById('completion-popup').style.display = 'block'; // Show popup
+        }
+    </script>
+
+</body>
+</html>
+
+
+

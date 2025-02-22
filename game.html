@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <title>Welcome to AI Terminal</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        body {
+            background: #2A2356;
+            color: #6EcbF5;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Dark overlay */
+        .dark-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);  /* Adjusted opacity */
+            z-index: 10;
+        }
+
+        /* Floating stars background */
+        .floating-stars {
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            width: 100%;
+            height: 100%;
+            background: url('https://example.com/space-background.png') repeat;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Game Popup */
+        .game-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #FF66B2;
+            width: 50%;
+            max-width: 600px;
+            color: #FFDD00;
+            box-shadow: 0 0 20px rgba(255, 102, 178, 0.5);
+            z-index: 20;
+        }
+
+        .game-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFDD00;
+            margin-bottom: 15px;
+        }
+
+        .game-description {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: #FFFFFF;
+        }
+
+        /* Quiz Box */
+        .quiz-box {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #FF66B2;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .quiz-box .question {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #FFFFFF;
+        }
+
+        .quiz-buttons button {
+            background: #FF66B2;
+            border: none;
+            color: #FFFFFF;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .quiz-buttons button:hover {
+            background: #FF80E0;
+        }
+
+        .wrong-answer {
+            background: red !important;
+            color: white;
+        }
+
+        .next-lesson-button {
+            background: #6EcbF5;
+            border: none;
+            color: #2A2356;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .next-lesson-button:hover {
+            background: #FF66B2;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Dark overlay -->
+    <div class="dark-overlay"></div>
+
+    <!-- Game pop-up box -->
+    <div class="game-popup" id="game-popup">
+        <div class="game-title">AI or Not?</div>
+        <div class="game-description">Complete mini-games to earn a certificate!</div>
+        <div class="instructions">A function is given to you in the following box. Determine if the tasks are done by AI or not by clicking on the option buttons below.</div>
+
+        <!-- Quiz box with a description and buttons -->
+        <div class="quiz-box">
+            <div class="question" id="question-text">Face ID: Unlocks your phone by scanning your face.</div>
+            <div class="quiz-buttons">
+                <button class="quiz-button" data-answer="ai">AI</button>
+                <button class="quiz-button" data-answer="not ai">Not AI</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating stars background -->
+    <div class="floating-stars"></div>
+
+    <script>
+        const questions = [
+            {
+                question: "Face ID: Unlocks your phone by scanning your face.",
+                correctAnswer: "ai"
+            },
+            {
+                question: "Barcode Scanning: Reading the barcode on items to retrieve product and price information.",
+                correctAnswer: "not ai"
+            },
+            {
+                question: "Google Search: Tailoring search results based on your past preferences.",
+                correctAnswer: "ai"
+            },
+            {
+                question: "Music Shuffle: Utilizing an algorithm to play songs in a shuffle on your music playlists.",
+                correctAnswer: "not ai"
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        // Function to show the next question
+        function showNextQuestion() {
+            if (currentQuestionIndex < questions.length) {
+                const currentQuestion = questions[currentQuestionIndex];
+                document.getElementById('question-text').textContent = currentQuestion.question;
+
+                // Reset button text and colors
+                const buttons = document.querySelectorAll('.quiz-button');
+                buttons.forEach(button => {
+                    button.classList.remove('wrong-answer');
+                    button.textContent = button.getAttribute('data-answer') === 'ai' ? 'AI' : 'Not AI';
+                });
+            } else {
+                showSuccessMessage(); // Show the success message when the last question is answered
+            }
+        }
+
+        // Add functionality for quiz buttons
+        document.querySelectorAll('.quiz-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const answer = this.getAttribute('data-answer');
+                const correctAnswer = questions[currentQuestionIndex].correctAnswer;
+
+                if (answer === correctAnswer) {
+                    currentQuestionIndex++;
+                    showNextQuestion();
+                } else {
+                    this.classList.add('wrong-answer');
+                    this.textContent = "Try Again!";
+                }
+            });
+        });
+
+        // Show success message and Lesson 2 button
+        function showSuccessMessage() {
+            document.getElementById('game-popup').innerHTML = `
+                <div class="game-title">Great Job! You got a new medal: Novice Hacker.</div>
+                <div class="game-description">Collect 3 more medals to graduate!</div>
+                <button class="next-lesson-button" onclick="window.location.href='lesson2.html'">Lesson 2: Common Features of Gen AI Applications</button>
+            `;
+        }
+
+        // Show the first question on page load
+        showNextQuestion();
+    </script>
+
+</body>
+</html>
+
+
+
+

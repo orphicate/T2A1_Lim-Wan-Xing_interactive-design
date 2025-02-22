@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <title>Drag the AI Risks! Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        body {
+            background: #2A2356;
+            color: #6EcbF5;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .title-box {
+            background: #1A1A2E;
+            border: 2px solid #FFDD00;
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #FFDD00;
+        }
+
+        .instructions {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #6EcbF5;
+            line-height: 1.6;
+            text-align: center;
+            white-space: pre-line;
+        }
+
+        .start-button {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            background-color: #586AE2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .start-button:hover {
+            background-color: #4E56D1;
+        }
+
+        .game-container, .drag-items-container {
+            display: none;
+            width: 80%;
+            max-width: 800px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .drop-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 45%;
+        }
+
+        .drop-zone {
+            background-color: #1A1A2E;
+            border: 2px solid #586AE2;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            min-height: 100px;
+            width: 100%;
+        }
+
+        .drag-item {
+            padding: 10px;
+            margin: 10px;
+            background-color: #586AE2;
+            border-radius: 5px;
+            cursor: grab;
+            color: white;
+            width: 90%;
+            text-align: center;
+        }
+
+        .message {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: #7FFFD4;
+        }
+
+        .try-again {
+            color: red;
+        }
+
+        /* Popup styling */
+        .completion-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9); /* Higher opacity */
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #FF66B2;
+            width: 50%;
+            max-width: 600px;
+            color: #FFDD00;
+            box-shadow: 0 0 20px rgba(255, 102, 178, 0.5);
+            z-index: 20;
+            text-align: center;
+            display: none; /* Hidden initially */
+        }
+
+        .completion-popup .message {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #7FFFD4; /* Aquamarine color */
+        }
+
+        .completion-popup button {
+            background: #6EcbF5;
+            border: none;
+            color: #2A2356;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .completion-popup button:hover {
+            background: #FF66B2;
+        }
+    </style>
+</head>
+<body>
+    <div class="title-box" id="titleBox">Drag the AI Risks!</div>
+    <div class="instructions" id="instructions">Match the AI risk to the correct scenario
+by dragging and dropping it into the correct box.</div>
+    <button class="start-button" id="startButton">Start</button>
+    
+    <div class="game-container" id="gameContainer" style="display: none;">
+        <div class="drop-column">
+            <div class="drop-zone" id="zone1">Personal Data Risk</div>
+            <div class="drop-zone" id="zone2">AI Hallucination</div>
+        </div>
+        <div class="drop-column">
+            <div class="drop-zone" id="zone3">Copyright Issues</div>
+            <div class="drop-zone" id="zone4">Misinformation & Deepfakes</div>
+        </div>
+    </div>
+    
+    <div class="drag-items-container" id="dragItemsContainer" style="display: none;">
+        <div class="drag-item" draggable="true" id="item1">Uploading private documents to an AI tool</div>
+        <div class="drag-item" draggable="true" id="item2">AI-generated medical advice with false data</div>
+        <div class="drag-item" draggable="true" id="item3">AI producing artwork that copies another artist</div>
+        <div class="drag-item" draggable="true" id="item4">AI creating a fake news article</div>
+    </div>
+    
+    <div class="message" id="message"></div>
+    
+    <!-- Completion Popup -->
+    <div class="completion-popup" id="completionPopup">
+        <div class="message">Excellent work! You got a new medal: Pro Hacker. You have graduated!</div>
+        <button id="summaryButton">Summary</button>
+    </div>
+
+    <script>
+        document.getElementById('startButton').addEventListener('click', function() {
+            document.getElementById('titleBox').style.display = 'none';
+            document.getElementById('instructions').style.display = 'none';
+            document.getElementById('startButton').style.display = 'none';
+            document.getElementById('gameContainer').style.display = 'flex';
+            document.getElementById('dragItemsContainer').style.display = 'block';
+        });
+    
+        const items = document.querySelectorAll('.drag-item');
+        const zones = document.querySelectorAll('.drop-zone');
+        const message = document.getElementById('message');
+        const completionPopup = document.getElementById('completionPopup');
+        const summaryButton = document.getElementById('summaryButton');
+        let correctItems = 0;
+    
+        items.forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text', e.target.id);
+            });
+        });
+    
+        zones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+            
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const draggedItemId = e.dataTransfer.getData('text');
+                const draggedItem = document.getElementById(draggedItemId);
+                
+                if ((zone.id === 'zone1' && draggedItemId === 'item1') ||
+                    (zone.id === 'zone2' && draggedItemId === 'item2') ||
+                    (zone.id === 'zone3' && draggedItemId === 'item3') ||
+                    (zone.id === 'zone4' && draggedItemId === 'item4')) {
+                    zone.appendChild(draggedItem);
+                    draggedItem.style.backgroundColor = '#32CD32';
+                    message.innerHTML = 'Correct!';
+                    correctItems++;
+                    checkCompletion();
+                } else {
+                    message.innerHTML = '<span class="try-again">Try Again!</span>';
+                }
+            });
+        });
+
+        // Check if all items are placed correctly
+        function checkCompletion() {
+            if (correctItems === items.length) {
+                showCompletionPopup();
+            }
+        }
+
+        // Show completion popup when game is completed
+        function showCompletionPopup() {
+            completionPopup.style.display = 'block';
+        }
+
+        // Redirect to summary page when 'Summary' button is clicked
+        summaryButton.addEventListener('click', function() {
+            window.location.href = 'summary.html';
+        });
+    </script>
+</body>
+</html>

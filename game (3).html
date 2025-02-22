@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=960, initial-scale=1.0">
+    <title>Best Prompt Award Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        body {
+            background: #2A2356;
+            color: #6EcbF5;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #FFDD00;
+        }
+
+        .instructions {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #6EcbF5;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .start-button {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            background-color: #586AE2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .start-button:hover {
+            background-color: #4E56D1;
+        }
+
+        .question-container {
+            display: none;
+            width: 80%;
+            max-width: 800px;
+            font-size: 1.1rem;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .question-box {
+            background-color: #1A1A2E;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #586AE2;
+            margin-bottom: 20px;
+            font-size: 1.3rem; /* Larger font size for the question */
+        }
+
+        .options-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .option {
+            width: 40%;
+            padding: 15px;
+            background-color: #1A1A2E;
+            border: 2px solid #586AE2;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            color: #6EcbF5;
+            font-size: 1.1rem; /* Slightly smaller font size for the options */
+        }
+
+        .option:hover {
+            background-color: #586AE2;
+        }
+
+        .message {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: #7FFFD4; /* Aquamarine color */
+            text-align: center; /* Center the text */
+        }
+
+        .try-again {
+    color: red; /* Red color for the "Try Again!" message */
+}
+        .correct {
+            color: #32CD32;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .completion-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid #FF66B2;
+            width: 50%;
+            max-width: 600px;
+            color: #FFDD00;
+            box-shadow: 0 0 20px rgba(255, 102, 178, 0.5);
+            z-index: 20;
+            text-align: center;
+        }
+
+        .completion-popup .message {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #7FFFD4; /* Aquamarine color */
+        }
+
+        .completion-popup button {
+            background: #6EcbF5;
+            border: none;
+            color: #2A2356;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .completion-popup button:hover {
+            background: #FF66B2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="title">Best Prompt Award</div>
+    <div class="instructions" id="instructions">
+        A task will be given to you.<br>
+        Select the box prompt that will give the best possible<br>
+        generated result from the AI tool for the task.
+    </div>
+    <button class="start-button" id="startButton">Start</button>
+
+    <div class="question-container" id="questionContainer">
+        <div class="question-box" id="questionBox">
+            <!-- Question will be displayed here -->
+        </div>
+        <div class="options-container" id="optionsContainer">
+            <!-- Options will be displayed here -->
+        </div>
+        <div class="message" id="message"></div>
+    </div>
+
+    <div class="completion-popup" id="completionPopup" style="display: none;">
+        <div class="message">
+            Fantastic Job! You got a new medal: Advanced Hacker.<br>
+            Collect 1 more medal to graduate!
+        </div>
+        <button onclick="window.location.href='lesson 4.html'">Lesson 4: Understanding and Managing Risks when using Generative AI</button>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const questionContainer = document.getElementById('questionContainer');
+        const questionBox = document.getElementById('questionBox');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const message = document.getElementById('message');
+        const instructions = document.getElementById('instructions'); 
+
+        const questions = [
+            {
+                question: "You want to make healthy meals for your daughter, but you don't know where to start.",
+                options: [
+                    "I'm a mom looking to create a healthy weekly meal plan for my picky 5-year-old daughter. Generate a plan with breakfast, lunch, dinner, and snack options for each day, presented in a bulleted list.",
+                    "Give me recipe ideas for my daughter."
+                ],
+                correctIndex: 0
+            },
+            {
+                question: "You need a birthday cake for a 10-year-old, but want something fun and unique.",
+                options: [
+                    "I have a 10-year old sister who loves the colour pink and dinosaurs. Her birthday is tomorrow and I need a cake that is easy and fast to make, but also tastes good. Can you give me a birthday cake recipe that is fun and visually appealing for her?",
+                    "Give me a simple birthday cake recipe for a child."
+                ],
+                correctIndex: 0
+            },
+            {
+                question: "You need to complete a university assignment quickly.",
+                options: [
+                    "I need a philosophy thesis idea that has not been done before.",
+                    "I am a Year 3 University student in Singapore. I have a Philosophy thesis that needs to be submitted in 6 hours. Give me a deep question to think about that has not been thought of by past famous philosophers, and what unique ways to start off writing it."
+                ],
+                correctIndex: 1 
+            },
+            {
+                question: "You want to prepare a healthy and quick lunch for work tomorrow.",
+                options: [
+                    "I am a 27-year-old office worker who does not have much time to make meals before work. I do not eat meat, and want a lunch that can give me protein to supplement my diet. Give me a healthy, quick lunch recipe that is high in nutrients which I can take to work tomorrow.",
+                    "Give me some lunch options."
+                ],
+                correctIndex: 0
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+
+        startButton.addEventListener('click', startGame);
+
+        function startGame() {
+            instructions.style.display = 'none';
+            startButton.style.display = 'none';
+            questionContainer.style.display = 'block';
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestionIndex];
+            questionBox.innerHTML = question.question;
+            optionsContainer.innerHTML = `
+                <div class="option" onclick="checkAnswer(0)">${question.options[0]}</div>
+                <div class="option" onclick="checkAnswer(1)">${question.options[1]}</div>
+            `;
+            message.innerHTML = ''; 
+        }
+
+        function checkAnswer(selectedIndex) {
+            const question = questions[currentQuestionIndex];
+            if (selectedIndex === question.correctIndex) {
+                message.innerHTML = '<span class="correct">Correct! Moving to the next question...</span>';
+                setTimeout(nextQuestion, 1000);  
+            } else {
+                message.innerHTML = '<span class="try-again">Try Again!</span>';
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                displayQuestion();
+            } else {
+                message.innerHTML = 'Fantastic Job! You got a new medal: Advanced Hacker.<br>Collect 1 more medal to graduate!';
+                document.getElementById('completionPopup').style.display = 'block'; 
+            }
+        }
+    </script>
+
+</body>
+</html>
+
+
