@@ -257,7 +257,9 @@
         let currentMatchIndex = 0;
 
         // Added event listener to ensure button works after DOM is loaded
-        document.getElementById('start-btn').addEventListener('click', startGame);
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('start-btn').addEventListener('click', startGame);
+        });
 
         function startGame() {
             // Hide instructions and show the game screen
