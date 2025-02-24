@@ -163,7 +163,7 @@
                 let line = initialLines[currentLineIndex];
                 
                 // Check if it's the specific line you want to highlight in pink
-                if (line === "Type the command to begin: [learn]. Or just stare at the screen--Me? I have all the time in the world.") {
+                if (line === "Type the command to begin: learn. Or just stare at the screen--Me? I have all the time in the world.") {
                     line = '<span class="highlight">' + line + '</span>'; // Wrap the line with the highlight class
                 } else {
                     line = highlightSpecificWords(line); // Highlight the specific words in the other lines
@@ -300,7 +300,7 @@
             if (command === 'learn') {
                 displayLearningContent();
             } else {
-                appendLine("I said... type [learn]! Come on now, I'm sure you know it!", 'cheeky-message');
+                appendLine("I said... type 'learn'! Come on now, I'm sure you know it!", 'cheeky-message');
             }
         }
     </script>
